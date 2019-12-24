@@ -1,0 +1,11 @@
+TO DO:
+Be able to save Username and passwords in their own little files
+    use saveinfo to write info to .acc
+        detect if account already exists
+            user.cpp line 201
+    use loadinfo to read and load info to program
+    -possibly encrypt the info? look into encryption libraries...
+    
+Change cancelValue so that even I dont know what it is on boot
+
+Add GUI?
