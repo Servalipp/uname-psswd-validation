@@ -6,6 +6,8 @@
 #include <vector>
 #include <cctype>
 #include <fstream>
+#include <random>
+#include <time.h>
 
 /**
  * @todo write docs
@@ -25,6 +27,7 @@ public:
     void DecideLogin();
     void PrintInfo();
     void SaveInfo();
+    std::string NewCancelValue();
 
     
     //vars
@@ -33,10 +36,10 @@ private:
     //func
     std::string ValidateUsername(std::string username);
     std::string ValidatePassword(std::string password);
-    void UnwrapAccountInfo();
     std::string infoToString();
-    inline bool doesFileExist(const std::string& name);
+    void UnwrapAccountInfo();
     void setDirectory();
+    inline bool doesFileExist(const std::string& name);
     
     //vars
     std::string username, tempUsername;

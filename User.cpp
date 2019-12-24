@@ -5,13 +5,14 @@
 #include <vector>
 #include <cctype>
 #include <fstream>
+#include <random>
+#include <time.h>
 
         User::User(){
-            debugInfo = false;
-            cancelValue = "^ ^ ^ 55jdsh..d . dfE$$";//if usernm/pass is this, it resets.
-            if (debugInfo)
-                std::cout << cancelValue << std::endl;
-            }
+            cancelValue = NewCancelValue();//if usernm/pass is this, it resets.
+            
+            debugInfo = false;//keep at bottom, so if to override this is wont bug whats above
+        }
         void User::PickUsername(){
             std::cout << "Please pick a username: ";
                 std::getline(std::cin, tempUsername);
@@ -213,4 +214,11 @@
         }
         void User::setDirectory(){
             Directory = "../Users/" + username + ".acc";
+        }
+        std::string User::NewCancelValue(){
+            std::srand(time(NULL));//setting seed...
+            int randInt = rand();//sets randInt to a random int
+            if (debugInfo)
+                std::cout << "cancelValue is " << randInt << std::endl;
+            return std::to_string(randInt);//returns a string value.
         }
