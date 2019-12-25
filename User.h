@@ -24,6 +24,7 @@ public:
     void DecideLogin();
     void PrintInfo();
     void SaveInfo();
+    std::string LoadInfo();
     std::string NewCancelValue();
 
     

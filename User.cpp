@@ -25,8 +25,7 @@
             std::cout << "Press 1 to Sign In, press 2 to sign up.\nThere is no exit button, because we are assholes.\n";
             std::getline(std::cin, userINPUT);
             if (userINPUT == "1"){
-                std::cout << "Actually, our programmers are so bad\nthey haven't really figured that\nout yet. Yikes!" << std::endl;
-                return;
+                SignIn();
             }
             else if (userINPUT == "2"){
                 SignUp();
@@ -47,9 +46,9 @@
             SaveInfo();
         }
         void User::SignIn(){
-            //login username
+            LoginUsername();
             std::cout << "User exists!" << std::endl;
-            //login password
+            LoginPassword();
             std::cout << "Password is correct." << std::endl;
         }
         void User::NewUsername(){
@@ -79,10 +78,34 @@
             std::cout << "Password is valid!" << std::endl;
         }
         void User::LoginUsername(){
+            std::cout << "Input your username: ";
+                std::getline(std::cin, username);
+            setDirectory();
             
+            if (doesFileExist(Directory)){
+                std::cout << "User found!\n";
+            }
+            else{
+                std::cout << "That user doesn't exist!\n";
+                LoginUsername();
+            }
+            return;
         }
         void User::LoginPassword(){
+            std::string userPassword;//the password stored inside the .acc file
             
+            userPassword = LoadInfo();
+            
+            std::cout << "Enter your password: ";
+                std::getline(std::cin, tempPassword);
+                
+            if (tempPassword == userPassword){
+                password = userPassword;
+            }
+            else{
+                std::cout << "Invalid password!\n";
+                LoginPassword();
+            }
         }
         std::string User::ValidateUsername(std::string username){
             char usernameArray[username.length()];
@@ -209,6 +232,15 @@
             
             UserSave.close();
         }
+        std::string User::LoadInfo(){
+            std::string userInfo;
+            std::ifstream UserSave;
+            
+            UserSave.open(Directory);
+            UserSave >> userInfo;
+            
+            return userInfo;
+        }
         void User::PrintInfo(){
             std::cout << "Username: " << username << std::endl;
             std::cout << "Password: " << password << std::endl;
@@ -218,7 +250,8 @@
         //misc functions
         std::string User::infoToString(){
             std::string usrInfo;
-            usrInfo = username + "\n" + password;
+            //usrInfo = username+"\n"+password; //don't need this for now, but if i choose to make these encrypted
+            usrInfo = password;
             return usrInfo;
         }
         inline bool User::doesFileExist(const std::string& name) {
