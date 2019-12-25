@@ -26,10 +26,13 @@ public:
     void SaveInfo();
     std::string LoadInfo();
     std::string NewCancelValue();
-
     
-    //vars
-    bool debugInfo;
+    //get and set
+    std::string GetUsername();
+    std::string GetPassword();
+    std::string GetCancelValue();
+    std::string GetDirectory();
+    void SetDebugInfo(bool tf);
 private:
     //func
     std::string ValidateUsername(std::string username);
@@ -40,6 +43,7 @@ private:
     inline bool doesFileExist(const std::string& name);
     
     //vars
+    bool debugInfo;
     std::string username, tempUsername;
     std::string password, tempPassword;
     std::string cancelValue;//this value is set for validation, if the username/pass is this, it will redo.

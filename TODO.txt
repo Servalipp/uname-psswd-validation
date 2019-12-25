@@ -1,8 +1,3 @@
 TO DO:
-Be able to save Username and passwords in their own little files - done
-    use saveinfo to write info to .acc - done
-        detect if account already exists - done
-    use loadinfo to read and load info to program
-    -possibly encrypt the info? look into encryption libraries...
-
+possibly encrypt the password file? look into encryption libraries...
 Add GUI?

@@ -3,7 +3,7 @@
 
 int main() {
     User UserHandle;
-    UserHandle.debugInfo = true;
+    UserHandle.SetDebugInfo(false);
     UserHandle.Setup();
     return 0;
 }

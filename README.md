@@ -8,6 +8,7 @@ This lil program does a lot of **cool** stuff, including (*but no limited to*):
 * Validate those to see if their **worthy**
 * Save those credentials to a file inside a nifty little folder called `Users`
 # What do I still need to work on?
-- [ ] Work on logging into the social media after initial signup.
+- [x] Work on logging into the social media after initial signup.
+- [x] Make get and set functions
 - [ ] Encypt their files so they dont get haxxors
 - [ ] Add GUI using Qt or GTK?

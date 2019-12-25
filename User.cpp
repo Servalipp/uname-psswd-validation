@@ -22,7 +22,7 @@
         }
         void User::DecideLogin(){
             std::string userINPUT;
-            std::cout << "Press 1 to Sign In, press 2 to sign up.\nThere is no exit button, because we are assholes.\n";
+            std::cout << "Press 1 to Sign In, press 2 to sign up, or press 3 to exit\n";
             std::getline(std::cin, userINPUT);
             if (userINPUT == "1"){
                 SignIn();
@@ -30,10 +30,14 @@
             else if (userINPUT == "2"){
                 SignUp();
             }
+            else if (userINPUT == "3"){
+                
+                std::abort();//Crashes program
+            }
             else{
-                std::cout << "Thats not 1, or 2. YOu suCK." << std::endl;
+                std::cout << "Sorry, thats's not a valid input." << std::endl;
                 if (debugInfo)
-                    std::cout << "It is: " << userINPUT << std::endl;
+                    std::cout << "You typed: " << userINPUT << std::endl;
             }
         }
         void User::SignUp(){
@@ -58,14 +62,14 @@
                 if (username == cancelValue)
                     username = ValidateUsername(tempUsername);
                 setDirectory();
-                std::cout << Directory << std::endl;
                 
                 if (doesFileExist(Directory)){//file exists, account already made
                     std::cout << "Sorry, the account already exists somehow.\nNobody even uses this social media!\n";
                     NewUsername();
                 }
                 else {
-                    std::cout << "No existing file named " << Directory << std::endl;
+                    if (debugInfo)
+                        std::cout << "No existing file named " << Directory << std::endl;
                 }
                 
         }
@@ -75,7 +79,6 @@
                 password = ValidatePassword(tempPassword);
                 if (password == cancelValue)
                      password = ValidatePassword(tempPassword);
-            std::cout << "Password is valid!" << std::endl;
         }
         void User::LoginUsername(){
             std::cout << "Input your username: ";
@@ -247,6 +250,23 @@
             return;
         }
         
+        //get and set
+        std::string User::GetUsername(){
+            return username;
+        }
+        std::string User::GetPassword(){
+            return password;
+        }
+        std::string User::GetCancelValue(){
+            return cancelValue;
+        }
+        std::string User::GetDirectory(){
+            return Directory;
+        }
+        void User::SetDebugInfo(bool tf){
+            debugInfo = tf;
+        }
+        
         //misc functions
         std::string User::infoToString(){
             std::string usrInfo;
@@ -264,20 +284,22 @@
             }   
         }
         void User::setDirectory(){
-            //Directory = "../Users/" + username + ".acc";
+            Directory = "../Users/" + username + ".acc";
+            /* The following code was writted because I got the build file in the
+             * wrong place. This was the only workaround I found, however it doesn't
+             * work, because it sets the path while building the program. For prebuilt
+             * packages, this wouldn't work. I am going to leave it in here for archival purposes.
             std::string workingPath = __FILE__;//sets var to path of .cpp
-            std::string directoryPath = workingPath.substr(0, workingPath.rfind("/"));  /*takes directory, subtracts User.cpp to it 
-                                                                        by finding the last occurence of "/"    */
+            std::string directoryPath = workingPath.substr(0, workingPath.rfind("/"));//takes directory, subtracts User.cpp to 
+                                                                                    //it by finding the last occurence of "/"
             Directory = directoryPath + "/Users/" + username + ".acc";
-            
+            */
             if (debugInfo)
-                std::cout << Directory << std::endl;
-                
+                std::cout << "setting save directory to " << Directory << std::endl;
         }
         std::string User::NewCancelValue(){
             std::srand(time(NULL));//setting seed...
             int randInt = rand();//sets randInt to a random int
-            if (debugInfo)
-                std::cout << "cancelValue is " << randInt << std::endl;
+
             return std::to_string(randInt);//returns a string value.
         }
