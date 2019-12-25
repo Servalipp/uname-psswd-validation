@@ -13,27 +13,76 @@
             
             debugInfo = false;//keep at bottom, so if to override this is wont bug whats above
         }
-        void User::PickUsername(){
+        void User::Setup(){
+            std::cout << "Hello! Welcome to a dumb social media\nthat already has a dwindiling userbase\n";
+            DecideLogin();
+            std::cout << "Alright, theres nothing for us to do now but\nsell your info. Good luck, sucker!\n";
+            
+            return; 
+        }
+        void User::DecideLogin(){
+            std::string userINPUT;
+            std::cout << "Press 1 to Sign In, press 2 to sign up.\nThere is no exit button, because we are assholes.\n";
+            std::getline(std::cin, userINPUT);
+            if (userINPUT == "1"){
+                std::cout << "Actually, our programmers are so bad\nthey haven't really figured that\nout yet. Yikes!" << std::endl;
+                return;
+            }
+            else if (userINPUT == "2"){
+                SignUp();
+            }
+            else{
+                std::cout << "Thats not 1, or 2. YOu suCK." << std::endl;
+                if (debugInfo)
+                    std::cout << "It is: " << userINPUT << std::endl;
+            }
+        }
+        void User::SignUp(){
+            NewUsername();
+            std::cout << "Username is valid!" << std::endl;
+            NewPassword();
+            std::cout << "Password is valid!" << std::endl;
+            if (debugInfo)
+                PrintInfo();
+            SaveInfo();
+        }
+        void User::SignIn(){
+            //login username
+            std::cout << "User exists!" << std::endl;
+            //login password
+            std::cout << "Password is correct." << std::endl;
+        }
+        void User::NewUsername(){
             std::cout << "Please pick a username: ";
                 std::getline(std::cin, tempUsername);
                 username = ValidateUsername(tempUsername);
                 if (username == cancelValue)
                     username = ValidateUsername(tempUsername);
                 setDirectory();
+                std::cout << Directory << std::endl;
                 
                 if (doesFileExist(Directory)){//file exists, account already made
                     std::cout << "Sorry, the account already exists somehow.\nNobody even uses this social media!\n";
-                    PickUsername();
+                    NewUsername();
+                }
+                else {
+                    std::cout << "No existing file named " << Directory << std::endl;
                 }
                 
         }
-        void User::PickPassword(){
+        void User::NewPassword(){
             std::cout << "\nPlease choose a password: ";
                 std::getline(std::cin, tempPassword);
                 password = ValidatePassword(tempPassword);
                 if (password == cancelValue)
                      password = ValidatePassword(tempPassword);
             std::cout << "Password is valid!" << std::endl;
+        }
+        void User::LoginUsername(){
+            
+        }
+        void User::LoginPassword(){
+            
         }
         std::string User::ValidateUsername(std::string username){
             char usernameArray[username.length()];
@@ -50,7 +99,7 @@
             
             if (!isValid){
                 std::cout << "Usernames cannot contain spaces, uppercase letters, or periods!" << std::endl;
-                PickUsername();
+                NewUsername();
             }
             else{
                 return username;
@@ -124,48 +173,12 @@
             
             if (!isValid){
                 std::cout <<    "Passwords must:\nhave at least 1 special character\nhave at least 1 number\nhave at lease one capital letter\nshould contain no spaces\nIn between 5 - 10 characters" << std::endl;
-                PickPassword();
+                NewPassword();
             }
             else{
                 return password;
             }
             return cancelValue;
-        }
-        void User::SignUp(){
-            PickUsername();
-            std::cout << "Username is valid!" << std::endl;
-            PickPassword();
-            std::cout << "Password is valid!" << std::endl;
-            if (debugInfo)
-                PrintInfo();
-        }
-        void User::SignIn(){
-            //talkabout stuff
-            //get user input then apply
-        }
-        void User::DecideLogin(){
-            std::string userINPUT;
-            std::cout << "Press 1 to Sign In, press 2 to sign up.\nThere is no exit button, because we are assholes.\n";
-            std::getline(std::cin, userINPUT);
-            if (userINPUT == "1"){
-                std::cout << "Actually, our programmers are so bad\nthey haven't really figured that\nout yet. Yikes!" << std::endl;
-                return;
-            }
-            else if (userINPUT == "2"){
-                SignUp();
-            }
-            else{
-                std::cout << "Thats not 1, or 2. YOu suCK." << std::endl;
-                if (debugInfo)
-                    std::cout << "It is: " << userINPUT << std::endl;
-            }
-        }
-        void User::Setup(){
-            std::cout << "Hello! Welcome to a dumb social media\nthat already has a dwindiling userbase\n";
-            DecideLogin();
-            std::cout << "Alright, theres nothing for us to do now but\nsell your info. Good luck, sucker!\n";
-            
-            return; 
         }
         void User::SaveInfo(){
             if (debugInfo)
@@ -185,6 +198,9 @@
                 return;
             }
             
+            if (doesFileExist(Directory)){//if file already exists...
+                std::cout << "File already exists... overwriting." << std::endl;
+            }
             std::ofstream UserSave;
             
             UserSave.open(Directory, std::ios::trunc | std::ios::out);
@@ -198,6 +214,8 @@
             std::cout << "Password: " << password << std::endl;
             return;
         }
+        
+        //misc functions
         std::string User::infoToString(){
             std::string usrInfo;
             usrInfo = username + "\n" + password;
@@ -213,7 +231,15 @@
             }   
         }
         void User::setDirectory(){
-            Directory = "../Users/" + username + ".acc";
+            //Directory = "../Users/" + username + ".acc";
+            std::string workingPath = __FILE__;//sets var to path of .cpp
+            std::string directoryPath = workingPath.substr(0, workingPath.rfind("/"));  /*takes directory, subtracts User.cpp to it 
+                                                                        by finding the last occurence of "/"    */
+            Directory = directoryPath + "/Users/" + username + ".acc";
+            
+            if (debugInfo)
+                std::cout << Directory << std::endl;
+                
         }
         std::string User::NewCancelValue(){
             std::srand(time(NULL));//setting seed...

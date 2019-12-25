@@ -9,16 +9,13 @@
 #include <random>
 #include <time.h>
 
-/**
- * @todo write docs
- */
 class User
 {
 public:
     //func
     User();
-    void PickUsername();
-    void PickPassword();
+    void NewUsername();
+    void NewPassword();
     void LoginUsername();
     void LoginPassword();
     void Setup();
@@ -46,7 +43,6 @@ private:
     std::string password, tempPassword;
     std::string cancelValue;//this value is set for validation, if the username/pass is this, it will redo.
     std::string Directory;//where the file for account information is
-
 };
 
 #endif // USER_H_INCLUDED
