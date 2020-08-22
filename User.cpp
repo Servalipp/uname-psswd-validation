@@ -12,6 +12,14 @@
             cancelValue = NewCancelValue();//if usernm/pass is this, it resets.
             
             debugInfo = false;//keep at bottom, so if to override this is wont bug whats above
+            
+            //setting defaults for PasswordRequirements
+            PasswordRequirements.needCap = true;
+            PasswordRequirements.needNoSpace = true;
+            PasswordRequirements.needNumber = true;
+            PasswordRequirements.needSpecial = true;
+            PasswordRequirements.passwordMaxLength = 10;
+            PasswordRequirements.passwordMinLength = 5;
         }
         void User::Setup(){
             std::cout << "Hello! Welcome to a dumb social media\nthat already has a dwindiling userbase\n";
@@ -36,6 +44,7 @@
             }
             else{
                 std::cout << "Sorry, thats's not a valid input." << std::endl;
+                DecideLogin();
                 if (debugInfo)
                     std::cout << "You typed: " << userINPUT << std::endl;
             }
@@ -146,37 +155,47 @@
             
             strcpy(passwordArray, password.c_str());
             
+            //I am aware this following check code is practically a sin and im going to hell because it checks every instance in every iteration of i.
+            //but as Valve developers say when something isnt particularly optimized: "Too bad!"
             for (int i=0;i<password.length();i++){
                 if(debugInfo)
                     std::cout << passwordArray[i] << ": ";
                 
-                if      (passwordArray[i] == ' '){//checks for spaces
-                    noSpace = false;
+                if (PasswordRequirements.needNoSpace){
+                    if      (passwordArray[i] == ' '){//checks for spaces
+                    noSpace = false;//this starts out true, so if it finds a space it turns false. it needs to be true to pass.
                     if(debugInfo)
                         std::cout << "nospFalse\n";
-                }
-                else if (std::isupper(passwordArray[i])){//checks for uppercase
+                    } 
+                } else noSpace = true; //if needNoSpace, is false, we make the bool true to bypass the check at the end.
+                
+                if (PasswordRequirements.needCap){
+                    if (std::isupper(passwordArray[i])){//checks for uppercase
                     hasCap = true;
                     if (debugInfo)
                         std::cout << "hasCapTrue\n";
-                }
-                else if (std::isdigit(passwordArray[i])){//checks for number
+                    }
+                } else hasCap = true;//same with last one, this becomes true if we dont need it.
+                
+                if (PasswordRequirements.needNumber){
+                    if (std::isdigit(passwordArray[i])){//checks for number
                     hasNumber = true;
                     if (debugInfo)
                         std::cout << "hasNumTrue\n";
-                }
-                else if (!(std::isalpha(passwordArray[i]))){//checks for symbol
+                    }
+                } else hasNumber = true;
+                
+                if (PasswordRequirements.needSpecial){
+                    if (!(std::isalpha(passwordArray[i]))){//checks for symbol
                     hasSpecial = true;
                     if (debugInfo)
                         std::cout << "hasSpecTrue\n";
-                }
-                else
-                    if (debugInfo)
-                        std::cout << "just a plain letter\n";
+                    }
+                } else hasSpecial = true;
             }
             
-            if (password.length() <= 10)
-                if (password.length() >= 5)
+            if (password.length() <= PasswordRequirements.passwordMaxLength)
+                if (password.length() >= PasswordRequirements.passwordMinLength)
                     goodLength = true;
                 else
                     goodLength = false;
@@ -198,7 +217,19 @@
             //---------
             
             if (!isValid){
-                std::cout <<    "Passwords must:\nhave at least 1 special character\nhave at least 1 number\nhave at lease one capital letter\nshould contain no spaces\nIn between 5 - 10 characters" << std::endl;
+                std::cout << "Invalid Password! Passwords must:" << std::endl;
+                
+                if (PasswordRequirements.needCap)
+                    std::cout << "Have one capital letter,\n";
+                if (PasswordRequirements.needNoSpace)
+                    std::cout << "Not contain spaces,\n";
+                if (PasswordRequirements.needNumber)
+                    std::cout << "Need at least one number,\n";
+                if (PasswordRequirements.needSpecial)
+                    std::cout << "Need at least one special character,\n";
+                std::cout << "And be at least " << PasswordRequirements.passwordMaxLength << " characters long,\n";
+                std::cout << "And must contain at least " << PasswordRequirements.passwordMinLength << " characters.\n";
+                
                 NewPassword();
             }
             else{

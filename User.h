@@ -9,6 +9,7 @@
 #include <random>
 #include <time.h>
 
+//in the future a lot of these classes will be moved to a gui class, but for now they are stored here as to not clutter up main.cpp
 class User
 {
 public:
@@ -33,6 +34,17 @@ public:
     std::string GetCancelValue();
     std::string GetDirectory();
     void SetDebugInfo(bool tf);
+    
+    struct PasswordRequirements {
+        bool    needSpecial,
+                needNumber,
+                needCap,
+                needNoSpace;
+        int     passwordMinLength,
+                passwordMaxLength;
+    };
+    PasswordRequirements PasswordRequirements; //declare the struct
+    
 private:
     //func
     std::string ValidateUsername(std::string username);
