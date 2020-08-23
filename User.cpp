@@ -18,8 +18,16 @@
             PasswordRequirements.needNoSpace = true;
             PasswordRequirements.needNumber = true;
             PasswordRequirements.needSpecial = true;
-            PasswordRequirements.passwordMaxLength = 10;
-            PasswordRequirements.passwordMinLength = 5;
+            PasswordRequirements.maxLength = 15;
+            PasswordRequirements.minLength = 5;
+            
+            //setting defaults for UsernameRequirements
+            UsernameRequirements.useCap = true;
+            UsernameRequirements.needNoSpace = true;
+            UsernameRequirements.useNumber = true;
+            UsernameRequirements.useSpecial = true;
+            UsernameRequirements.maxLength = 15;
+            UsernameRequirements.minLength = 5;
         }
         void User::Setup(){
             std::cout << "Hello! Welcome to a dumb social media\nthat already has a dwindiling userbase\n";
@@ -67,9 +75,9 @@
         void User::NewUsername(){
             std::cout << "Please pick a username: ";
                 std::getline(std::cin, tempUsername);
-                username = ValidateUsername(tempUsername);
-                if (username == cancelValue)
-                    username = ValidateUsername(tempUsername);
+                if (ValidateUsername(tempUsername, UsernameRequirements)){//if this returns true, meaning is has been vaildated.
+                    username = tempUsername;
+                } else NewUsername();
                 setDirectory();
                 
                 if (doesFileExist(Directory)){//file exists, account already made
@@ -85,9 +93,9 @@
         void User::NewPassword(){
             std::cout << "\nPlease choose a password: ";
                 std::getline(std::cin, tempPassword);
-                password = ValidatePassword(tempPassword);
-                if (password == cancelValue)
-                     password = ValidatePassword(tempPassword);
+                if (ValidatePassword(tempPassword, PasswordRequirements)){//if this returns true, meaning is has been vaildated.
+                    password = tempPassword;
+                } else NewPassword();
         }
         void User::LoginUsername(){
             std::cout << "Input your username: ";
@@ -119,33 +127,66 @@
                 LoginPassword();
             }
         }
-        std::string User::ValidateUsername(std::string username){
+        bool User::ValidateUsername(std::string username, const UsernameRequirementsStruct Requirements){
             char usernameArray[username.length()];
-            bool isValid = true;
-            
+            bool isValid = false;
+                bool goodLength = false;
             strcpy(usernameArray, username.c_str());
             
             for (int i=0;i<=username.length();i++){
-                if (usernameArray[i] == ' '||
-                    std::isupper(usernameArray[i])||
-                    usernameArray[i] == '.')
-                    isValid = false;
+                if(debugInfo) std::cout << usernameArray[i] << ": ";
+                
+                if (Requirements.needNoSpace){
+                    if      (usernameArray[i] == ' '){//checks for spaces
+                        if (debugInfo) std::cout << "Contains space\n";
+                        return false; //if it finds a space, returns false immediatley
+                    } 
+                }
+                
+                /*
+                if (!Requirements.useSpecial){
+                    if (!(std::isalpha(usernameArray[i]))){//checks for symbol
+                        if (debugInfo) std::cout << "Contains symbol\n";
+                        return false;
+                    }
+                }
+                *///symbol is being notty, detecing the "enter" button as \n
+                
+                if (!Requirements.useCap){
+                    if (std::isupper(usernameArray[i])){//checks for uppercase
+                        if (debugInfo) std::cout << "Contains a capital\n";
+                        return false;
+                    }
+                }
+                
+                if (!Requirements.useNumber){
+                    if (std::isdigit(usernameArray[i])){//checks for number
+                        if (debugInfo) std::cout << "Contains number\n";
+                        return false;
+                    }
+                }
+                
+                if (username.length() <= Requirements.maxLength)
+                    if (username.length() >= Requirements.minLength)
+                        goodLength = true;
+                    else
+                        goodLength = false;
+                else
+                    goodLength = false;
             }
             
-            if (!isValid){
-                std::cout << "Usernames cannot contain spaces, uppercase letters, or periods!" << std::endl;
-                NewUsername();
-            }
-            else{
-                return username;
-            }
+            if (goodLength)
+                isValid = true;
+            else
+                isValid = false;
             
-            return cancelValue;
+            if (!isValid) printWrongUsernameWarning(Requirements); //if invalid, it tells you what you must have.
+            return isValid;
         }
-        std::string User::ValidatePassword(std::string password){
+        bool User::ValidatePassword(std::string password, const PasswordRequirementsStruct Requirements){
             
             char passwordArray[password.length()];
-            bool isValid = true;
+            bool isValid = false;
                 //password identifiers
                 bool    hasSpecial = false,
                         hasNumber = false,
@@ -158,10 +199,9 @@
             //I am aware this following check code is practically a sin and im going to hell because it checks every instance in every iteration of i.
             //but as Valve developers say when something isnt particularly optimized: "Too bad!"
             for (int i=0;i<password.length();i++){
-                if(debugInfo)
-                    std::cout << passwordArray[i] << ": ";
+                if(debugInfo) std::cout << passwordArray[i] << ": ";
                 
-                if (PasswordRequirements.needNoSpace){
+                if (Requirements.needNoSpace){
                     if      (passwordArray[i] == ' '){//checks for spaces
                     noSpace = false;//this starts out true, so if it finds a space it turns false. it needs to be true to pass.
                     if(debugInfo)
@@ -169,7 +209,7 @@
                     } 
                 } else noSpace = true; //if needNoSpace, is false, we make the bool true to bypass the check at the end.
                 
-                if (PasswordRequirements.needCap){
+                if (Requirements.needCap){
                     if (std::isupper(passwordArray[i])){//checks for uppercase
                     hasCap = true;
                     if (debugInfo)
@@ -177,7 +217,7 @@
                     }
                 } else hasCap = true;//same with last one, this becomes true if we dont need it.
                 
-                if (PasswordRequirements.needNumber){
+                if (Requirements.needNumber){
                     if (std::isdigit(passwordArray[i])){//checks for number
                     hasNumber = true;
                     if (debugInfo)
@@ -185,7 +225,7 @@
                     }
                 } else hasNumber = true;
                 
-                if (PasswordRequirements.needSpecial){
+                if (Requirements.needSpecial){
                     if (!(std::isalpha(passwordArray[i]))){//checks for symbol
                     hasSpecial = true;
                     if (debugInfo)
@@ -194,8 +234,8 @@
                 } else hasSpecial = true;
             }
             
-            if (password.length() <= PasswordRequirements.passwordMaxLength)
-                if (password.length() >= PasswordRequirements.passwordMinLength)
+            if (password.length() <= Requirements.maxLength)
+                if (password.length() >= Requirements.minLength)
                     goodLength = true;
                 else
                     goodLength = false;
@@ -216,26 +256,8 @@
                 isValid = false;
             //---------
             
-            if (!isValid){
-                std::cout << "Invalid Password! Passwords must:" << std::endl;
-                
-                if (PasswordRequirements.needCap)
-                    std::cout << "Have one capital letter,\n";
-                if (PasswordRequirements.needNoSpace)
-                    std::cout << "Not contain spaces,\n";
-                if (PasswordRequirements.needNumber)
-                    std::cout << "Need at least one number,\n";
-                if (PasswordRequirements.needSpecial)
-                    std::cout << "Need at least one special character,\n";
-                std::cout << "And be at least " << PasswordRequirements.passwordMaxLength << " characters long,\n";
-                std::cout << "And must contain at least " << PasswordRequirements.passwordMinLength << " characters.\n";
-                
-                NewPassword();
-            }
-            else{
-                return password;
-            }
-            return cancelValue;
+            if (!isValid) printWrongPasswordWarning(Requirements); //if invalid, it tells you what you must have.
+            return isValid;
         }
         void User::SaveInfo(){
             if (debugInfo)
@@ -333,4 +355,32 @@
             int randInt = rand();//sets randInt to a random int
 
             return std::to_string(randInt);//returns a string value.
+        }
+        void User::printWrongPasswordWarning(const PasswordRequirementsStruct Requirements){
+            std::cout << "Invalid Password! Password must:" << std::endl;
+                
+            if (Requirements.needCap)
+                std::cout << "Have one capital letter,\n";
+            if (Requirements.needNoSpace)
+                std::cout << "Not contain spaces,\n";
+            if (Requirements.needNumber)
+                std::cout << "Need at least one number,\n";
+            if (Requirements.needSpecial)
+                std::cout << "Need at least one special character,\n";
+                std::cout << "And be at least " << Requirements.maxLength << " characters long,\n";
+                std::cout << "And must contain at least " << Requirements.minLength << " characters.\n";
+        }
+        void User::printWrongUsernameWarning(const UsernameRequirementsStruct Requirements){
+            std::cout << "Invalid Username! Usernames must:" << std::endl;
+                
+            if (!Requirements.useCap)
+                std::cout << "Not contain capital letter,\n";
+            if (Requirements.needNoSpace)
+                std::cout << "Not contain spaces,\n";
+            if (!Requirements.useNumber)
+                std::cout << "Not contain any numbers,\n";
+            if (!Requirements.useSpecial)
+                std::cout << "Not contain special characters,\n";
+            std::cout << "And be at least " << Requirements.maxLength << " characters long,\n";
+            std::cout << "And must contain at least " << Requirements.minLength << " characters.\n";
         }

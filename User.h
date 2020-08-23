@@ -35,20 +35,30 @@ public:
     std::string GetDirectory();
     void SetDebugInfo(bool tf);
     
-    struct PasswordRequirements {
+    struct PasswordRequirementsStruct {
         bool    needSpecial,
                 needNumber,
                 needCap,
                 needNoSpace;
-        int     passwordMinLength,
-                passwordMaxLength;
+        int     minLength,
+                maxLength;
     };
-    PasswordRequirements PasswordRequirements; //declare the struct
-    
+    struct UsernameRequirementsStruct {
+        bool    useSpecial, //needs revamp once i implement gui, because for some reason cin detects enter as a character, and then std thinks its a symbol. for now i have disabled this feature in ValidateUsername()
+                useNumber,
+                useCap,
+                needNoSpace;
+        int     minLength,
+                maxLength;
+    };
+    struct PasswordRequirementsStruct PasswordRequirements; //declare the struct
+    struct UsernameRequirementsStruct UsernameRequirements; //declare the struct for usernames
 private:
     //func
-    std::string ValidateUsername(std::string username);
-    std::string ValidatePassword(std::string password);
+    bool ValidateUsername(std::string username, const UsernameRequirementsStruct Requirements);
+    bool ValidatePassword(std::string password, const PasswordRequirementsStruct Requirements);
+    void printWrongPasswordWarning(const PasswordRequirementsStruct Requirements);
+    void printWrongUsernameWarning(const UsernameRequirementsStruct Requirements);
     std::string infoToString();
     void UnwrapAccountInfo();
     void setDirectory();
