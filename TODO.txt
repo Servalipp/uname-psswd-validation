@@ -1,3 +1,0 @@
-TO DO:
-possibly encrypt the password file? look into encryption libraries...
-Add GUI?
